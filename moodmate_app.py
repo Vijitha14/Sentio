@@ -1,8 +1,8 @@
-from rag_retriever import retrieve_relevant_context
-import streamlit as st
 from google import genai
+import streamlit as st
 import os
 from dotenv import load_dotenv
+from rag_retriever import retrieve_relevant_context
 
 # ---------------------------------
 # Load Environment Variables
