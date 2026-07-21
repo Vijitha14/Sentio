@@ -71,6 +71,6 @@ User:
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=full_prompt
-            )
+)
             st.markdown("### 🕯️ MoodMate says")
             st.success(response.text)
