@@ -1,4 +1,4 @@
-from google import genai
+from groq import groq
 import streamlit as st
 import os
 from dotenv import load_dotenv
@@ -9,9 +9,9 @@ from rag_retriever import retrieve_relevant_context
 # ---------------------------------
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+client = Groq(api_key=GROQ_API_KEY)
 
 # ---------------------------------
 # Streamlit Page Configuration
@@ -68,15 +68,23 @@ User:
 {user_input}
 """
 
-            # Generate response using Gemini
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=full_prompt
-            )
+           response = client.chat.completions.create(
+    model="llama-3.3-70b-versatile",
+    messages=[
+        {
+            "role": "system",
+            "content": "You are MoodMate, a calm, gentle, emotionally supportive AI companion. Never diagnose diseases or prescribe medication. Be warm, empathetic, and concise."
+        },
+        {
+            "role": "user",
+            "content": full_prompt
+        }
+    ],
+    temperature=0.7,
+    max_tokens=300
+)
 
-            # Display response
-            st.markdown("### 🕯️ MoodMate says")
-            st.success(response.text)
+reply = response.choices[0].message.content
 
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+st.markdown("### 🕯️ MoodMate says")
+st.success(reply)
