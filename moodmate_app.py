@@ -4,18 +4,18 @@ from google import genai
 import os
 from dotenv import load_dotenv
 
-# ----------------------------
+# ---------------------------------
 # Load Environment Variables
-# ----------------------------
+# ---------------------------------
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-# ----------------------------
-# Streamlit UI
-# ----------------------------
+# ---------------------------------
+# Streamlit Page Configuration
+# ---------------------------------
 st.set_page_config(
     page_title="MoodMate 🌷",
     page_icon="🌷",
@@ -25,24 +25,24 @@ st.set_page_config(
 st.title("🌷 MoodMate – Your Soft-Spoken Support AI")
 st.write("Tell me how you're feeling today, and I'll hold space for you 💌")
 
-# ----------------------------
+# ---------------------------------
 # User Input
-# ----------------------------
+# ---------------------------------
 user_input = st.text_input(
     "💭 What's on your mind?",
     placeholder="I'm feeling a bit overwhelmed today..."
 )
 
-# ----------------------------
+# ---------------------------------
 # AI Response
-# ----------------------------
+# ---------------------------------
 if user_input:
 
     with st.spinner("MoodMate is thinking... 🧠"):
 
         try:
 
-            # Retrieve relevant context using RAG
+            # Retrieve relevant context (RAG)
             context = retrieve_relevant_context(
                 user_input,
                 file_path="data/mood_knowledge.txt"
@@ -68,9 +68,15 @@ User:
 {user_input}
 """
 
+            # Generate response using Gemini
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=full_prompt
-)
+            )
+
+            # Display response
             st.markdown("### 🕯️ MoodMate says")
             st.success(response.text)
+
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
