@@ -1,8 +1,7 @@
 streamlit
-requests
+google-genai
 faiss-cpu
 transformers
 scikit-learn
 numpy
 python-dotenv
-google-genai
