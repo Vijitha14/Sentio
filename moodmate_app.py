@@ -1,6 +1,6 @@
 from rag_retriever import retrieve_relevant_context
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 import os
 from dotenv import load_dotenv
 
