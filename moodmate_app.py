@@ -1,12 +1,16 @@
 from rag_retriever import retrieve_relevant_context
 import streamlit as st
-import requests
+import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
 
-load_dotenv()  
-HF_TOKEN = os.getenv("HF_TOKEN")
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 # 🪄 Streamlit Page Settings
 st.set_page_config(page_title="MoodMate 🕯️", page_icon="🌷")
@@ -40,19 +44,9 @@ if user_input:
                 }
             }
 
-            # 🔗 Step 4: Send to HuggingFace endpoint
-            response = requests.post(
-                "https://api-inference.huggingface.co/chat/assistant/68566fc693d565d0bdbac000",
-                headers=headers,
-                json=data
-            )
+         # 🤖 Generate response using Gemini
+           response = model.generate_content(full_prompt)
 
-            # 📤 Step 5: Show reply or error
-            if response.status_code == 200:
-                moodmate_reply = response.json().get("generated_text", "")
-                st.markdown(f"🕯️ **MoodMate says:**\n\n{moodmate_reply}")
-            else:
-                st.error(f"Oops! Something went wrong. Status code: {response.status_code}")
+           moodmate_reply = response.text
 
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+           st.markdown(f"🕯️ **MoodMate says:**\n\n{moodmate_reply}")
