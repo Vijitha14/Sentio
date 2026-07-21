@@ -28,7 +28,21 @@ if user_input:
             context = retrieve_relevant_context(user_input, file_path="data/mood_knowledge.txt")
 
             # 📝 Step 2: Combine context + query
-            full_prompt = f"Context:\n{context}\n\nUser Query:\n{user_input}"
+            full_prompt = f"""
+You are MoodMate, a calm and supportive AI companion.
+
+Rules:
+- Be empathetic and gentle.
+- Never provide medical diagnoses.
+- Encourage healthy coping strategies.
+- Keep responses warm, conversational, and concise.
+
+Context:
+{context}
+
+User:
+{user_input}
+"""
 
             # 🚀 Step 3: Prepare request
             headers = {
