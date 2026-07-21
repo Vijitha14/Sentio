@@ -4,7 +4,9 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
-
+# ----------------------------
+# Load Environment Variables
+# ----------------------------
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -12,55 +14,66 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-# 🪄 Streamlit Page Settings
-st.set_page_config(page_title="MoodMate 🕯️", page_icon="🌷")
+# ----------------------------
+# Streamlit UI
+# ----------------------------
+st.set_page_config(
+    page_title="MoodMate 🌷",
+    page_icon="🌷",
+    layout="centered"
+)
+
 st.title("🌷 MoodMate – Your Soft-Spoken Support AI")
-st.write("Tell me how you're feeling today, and I’ll hold space for you 💌")
+st.write("Tell me how you're feeling today, and I'll hold space for you 💌")
 
-# 🧠 User Input
-user_input = st.text_input("💭 What's on your mind?", placeholder="I'm feeling a bit overwhelmed today...")
+# ----------------------------
+# User Input
+# ----------------------------
+user_input = st.text_input(
+    "💭 What's on your mind?",
+    placeholder="I'm feeling a bit overwhelmed today..."
+)
 
-
+# ----------------------------
+# AI Response
+# ----------------------------
 if user_input:
-    with st.spinner("MoodMate is thinking... 🧠"):
-        try:
-            # 🔍 Step 1: Retrieve relevant context from file
-            context = retrieve_relevant_context(user_input, file_path="data/mood_knowledge.txt")
 
-            # 📝 Step 2: Combine context + query
+    with st.spinner("MoodMate is thinking... 🧠"):
+
+        try:
+
+            # Retrieve relevant context using RAG
+            context = retrieve_relevant_context(
+                user_input,
+                file_path="data/mood_knowledge.txt"
+            )
+
+            # Build prompt
             full_prompt = f"""
-You are MoodMate, a calm and supportive AI companion.
+You are MoodMate, a calm, gentle, emotionally supportive AI companion.
 
 Rules:
-- Be empathetic and gentle.
-- Never provide medical diagnoses.
+- Speak warmly and kindly.
+- Never diagnose medical conditions.
+- Never prescribe medicines.
+- Validate the user's feelings.
 - Encourage healthy coping strategies.
-- Keep responses warm, conversational, and concise.
+- Ask gentle follow-up questions when appropriate.
+- Keep responses concise (100–150 words).
 
-Context:
+Relevant Context:
 {context}
 
 User:
 {user_input}
 """
 
-            # 🚀 Step 3: Prepare request
-            headers = {
-                "Authorization": f"Bearer {HF_TOKEN}",
-                "Content-Type": "application/json"
-            }
+            # Generate response using Gemini
+            response = model.generate_content(full_prompt)
 
-            data = {
-                "inputs": {
-                    "past_user_inputs": [],
-                    "generated_responses": [],
-                    "text": full_prompt
-                }
-            }
+            st.markdown("### 🕯️ MoodMate says")
+            st.success(response.text)
 
-         # 🤖 Generate response using Gemini
-           response = model.generate_content(full_prompt)
-
-           moodmate_reply = response.text
-
-           st.markdown(f"🕯️ **MoodMate says:**\n\n{moodmate_reply}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
