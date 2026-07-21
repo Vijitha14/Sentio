@@ -68,11 +68,9 @@ User:
 {user_input}
 """
 
-            # Generate response using Gemini
-            response = model.generate_content(full_prompt)
-
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=full_prompt
+            )
             st.markdown("### 🕯️ MoodMate says")
             st.success(response.text)
-
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
